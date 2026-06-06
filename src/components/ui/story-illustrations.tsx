@@ -177,9 +177,40 @@ export const SceneOverwhelmed = ({ className }: { className?: string }) => (
       <text x="630" y="505" fontFamily="sans-serif" fontSize="14" fontWeight="bold" fill="#f59e0b" textAnchor="middle">Follow up in 3 days</text>
     </g>
 
+    {/* Character Close-up (Bottom Left) */}
+    <g transform="translate(50, 250)">
+      <path d="M0 150 Q100 120 200 150 L250 400 L-50 400 Z" fill="url(#hoodieGrad)" />
+      
+      {/* Head */}
+      <ellipse cx="120" cy="80" rx="60" ry="75" fill="url(#skinGrad)" filter="url(#softShadow)" />
+      
+      {/* Hair */}
+      <path d="M60 60 Q80 10 120 0 Q180 10 180 70 Q150 20 60 60 Z" fill="#334155" />
+      
+      {/* Overwhelmed Expression */}
+      {/* Furrowed Eyebrows */}
+      <path d="M85 70 Q100 60 115 75" stroke="#78350f" strokeWidth="4" strokeLinecap="round" fill="none" />
+      <path d="M155 70 Q140 60 125 75" stroke="#78350f" strokeWidth="4" strokeLinecap="round" fill="none" />
+      
+      {/* Wide Eyes */}
+      <circle cx="100" cy="90" r="10" fill="white" />
+      <circle cx="100" cy="90" r="4" fill="#0f172a" />
+      <circle cx="140" cy="90" r="10" fill="white" />
+      <circle cx="140" cy="90" r="4" fill="#0f172a" />
+      
+      {/* Open stressed mouth */}
+      <ellipse cx="120" cy="130" rx="10" ry="15" fill="#78350f" />
+      <path d="M110 130 Q120 125 130 130" stroke="white" strokeWidth="3" fill="none" />
+      
+      {/* Sweat drop */}
+      <path d="M170 50 Q180 65 170 75 Q160 65 170 50 Z" fill="#bae6fd" opacity="0.8" />
+      
+      {/* Hand on head */}
+      <path d="M-20 250 Q10 150 60 100 Q80 100 80 120 Q40 180 20 250 Z" fill="url(#hoodieGrad)" />
+      <ellipse cx="70" cy="100" rx="20" ry="25" fill="url(#skinShadow)" />
+    </g>
   </svg>
 );
-
 
 export const SceneMemoryFog = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">

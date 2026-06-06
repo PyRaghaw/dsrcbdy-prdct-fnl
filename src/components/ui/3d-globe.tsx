@@ -7,8 +7,6 @@ export interface Marker {
   lng: number;
   src?: string;
   label: string;
-  color?: string;
-  initials?: string;
 }
 
 export interface GlobeConfig {
@@ -25,30 +23,38 @@ export interface Globe3DProps {
   onMarkerHover?: (marker: Marker | null) => void;
 }
 
+// Simple geographic landmass approximation to generate dotted continents
 function isLand(lat: number, lng: number) {
   let inLand = false;
   
+  // North America
   if (lat > 15 && lat < 75 && lng > -165 && lng < -50) {
     if (!(lat < 30 && lng > -100 && lng < -80)) inLand = true;
   }
+  // South America
   else if (lat > -55 && lat <= 15 && lng > -85 && lng < -35) {
     inLand = true;
   }
+  // Africa
   else if (lat > -35 && lat < 37 && lng > -20 && lng < 52) {
     inLand = true;
   }
+  // Europe
   else if (lat >= 37 && lat < 72 && lng > -10 && lng < 40) {
     inLand = true;
   }
+  // Asia
   else if (lat > 5 && lat < 75 && lng >= 40 && lng < 180) {
     inLand = true;
   }
+  // Australia
   else if (lat > -45 && lat < -10 && lng > 110 && lng < 155) {
     inLand = true;
   }
 
   if (!inLand) return false;
 
+  // Add detail using high frequency wave noise
   const noise = Math.sin(lat * 0.45) * Math.cos(lng * 0.45) +
                 Math.sin(lat * 0.15) * Math.sin(lng * 0.25) * 0.5;
   return noise > -0.65;
@@ -58,27 +64,30 @@ export function Globe3D({ markers = [], config = {}, onMarkerClick, onMarkerHove
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
-  const [rotationX, setRotationX] = useState(0.3);
-  const [rotationY, setRotationY] = useState(0);
+  const [rotationX, setRotationX] = useState(0.3); // inclination
+  const [rotationY, setRotationY] = useState(0); // rotation angle
   const [isDragging, setIsDragging] = useState(false);
   const [hoveredMarker, setHoveredMarker] = useState<Marker | null>(null);
 
   const autoRotateSpeed = config.autoRotateSpeed !== undefined ? config.autoRotateSpeed : 0.3;
   const atmosphereColor = config.atmosphereColor || "#5c60f5";
 
+  // Pre-generate land dots on the sphere
   const dotsRef = useRef<{ x: number; y: number; z: number }[]>([]);
   useEffect(() => {
     const list: { x: number; y: number; z: number }[] = [];
-    const R = 1;
+    const R = 1; // unit radius
     for (let lat = -80; lat <= 80; lat += 3) {
       const radLat = (lat * Math.PI) / 180;
       const cosLat = Math.cos(radLat);
       const sinLat = Math.sin(radLat);
       
+      // density spacing based on latitude
       const stepLng = 3 / Math.max(0.1, cosLat);
       for (let lng = -180; lng < 180; lng += stepLng) {
         if (isLand(lat, lng)) {
           const radLng = (lng * Math.PI) / 180;
+          // Calculate 3D sphere coordinates
           list.push({
             x: R * cosLat * Math.sin(radLng),
             y: R * sinLat,
@@ -90,6 +99,7 @@ export function Globe3D({ markers = [], config = {}, onMarkerClick, onMarkerHove
     dotsRef.current = list;
   }, []);
 
+  // Drag interaction variables
   const dragStartRef = useRef({ x: 0, y: 0 });
   const rotationStartRef = useRef({ x: 0, y: 0 });
 
@@ -104,6 +114,7 @@ export function Globe3D({ markers = [], config = {}, onMarkerClick, onMarkerHove
     const deltaX = e.clientX - dragStartRef.current.x;
     const deltaY = e.clientY - dragStartRef.current.y;
     
+    // adjust rotation based on mouse movement
     setRotationY(rotationStartRef.current.y + deltaX * 0.005);
     setRotationX(Math.max(-Math.PI / 3, Math.min(Math.PI / 3, rotationStartRef.current.x - deltaY * 0.005)));
   };
@@ -112,6 +123,7 @@ export function Globe3D({ markers = [], config = {}, onMarkerClick, onMarkerHove
     setIsDragging(false);
   };
 
+  // Auto-rotation loop
   useEffect(() => {
     if (isDragging) return;
     let animationFrameId: number;
@@ -123,12 +135,16 @@ export function Globe3D({ markers = [], config = {}, onMarkerClick, onMarkerHove
     return () => cancelAnimationFrame(animationFrameId);
   }, [isDragging, autoRotateSpeed]);
 
+  // Project 3D points based on rotationX (inclination) and rotationY (spin)
   const projectPoint = (x: number, y: number, z: number, R: number) => {
+    // 3D Rotations
+    // Spin around Y axis
     const cosY = Math.cos(rotationY);
     const sinY = Math.sin(rotationY);
     const x1 = x * cosY - z * sinY;
     const z1 = x * sinY + z * cosY;
 
+    // Tilt around X axis
     const cosX = Math.cos(rotationX);
     const sinX = Math.sin(rotationX);
     const y2 = y * cosX - z1 * sinX;
@@ -137,20 +153,11 @@ export function Globe3D({ markers = [], config = {}, onMarkerClick, onMarkerHove
     return {
       x: x1 * R,
       y: y2 * R,
-      z: z2 * R,
+      z: z2 * R, // z2 > 0 is front side
     };
   };
 
-  const markerTo3D = (marker: Marker) => {
-    const latRad = (marker.lat * Math.PI) / 180;
-    const lngRad = (marker.lng * Math.PI) / 180;
-    return {
-      x: Math.cos(latRad) * Math.sin(lngRad),
-      y: Math.sin(latRad),
-      z: Math.cos(latRad) * Math.cos(lngRad),
-    };
-  };
-
+  // Main canvas rendering
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -168,8 +175,9 @@ export function Globe3D({ markers = [], config = {}, onMarkerClick, onMarkerHove
     
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
-    const R = Math.min(cx, cy) * 0.75;
+    const R = Math.min(cx, cy) * 0.75; // Sphere visual radius
 
+    // 1. Draw glowing atmosphere (outer glow)
     const atmosphereGlow = ctx.createRadialGradient(cx, cy, R * 0.95, cx, cy, R * 1.15);
     atmosphereGlow.addColorStop(0, `${atmosphereColor}22`);
     atmosphereGlow.addColorStop(0.5, `${atmosphereColor}0d`);
@@ -179,6 +187,7 @@ export function Globe3D({ markers = [], config = {}, onMarkerClick, onMarkerHove
     ctx.arc(cx, cy, R * 1.25, 0, Math.PI * 2);
     ctx.fill();
 
+    // 2. Draw sphere background gradient (depth)
     const sphereBg = ctx.createRadialGradient(cx - R * 0.2, cy - R * 0.2, R * 0.1, cx, cy, R);
     sphereBg.addColorStop(0, "#ffffff");
     sphereBg.addColorStop(0.4, "#f8fafc");
@@ -188,12 +197,18 @@ export function Globe3D({ markers = [], config = {}, onMarkerClick, onMarkerHove
     ctx.arc(cx, cy, R, 0, Math.PI * 2);
     ctx.fill();
 
+    // 3. Draw Dotted continents
     dotsRef.current.forEach((dot) => {
       const proj = projectPoint(dot.x, dot.y, dot.z, R);
+      
+      // Only render front side dots (proj.z > 0) with rich details
+      // and optionally back side dots (proj.z < 0) very faintly
       if (proj.z > 0) {
         const sx = cx + proj.x;
         const sy = cy - proj.y;
-        const depth = proj.z / R;
+        
+        // Depth-based size and opacity
+        const depth = proj.z / R; // 0 to 1
         const size = (depth * 1.2) + 0.8;
         const opacity = (depth * 0.45) + 0.25;
 
@@ -202,6 +217,7 @@ export function Globe3D({ markers = [], config = {}, onMarkerClick, onMarkerHove
         ctx.arc(sx, sy, size, 0, Math.PI * 2);
         ctx.fill();
       } else {
+        // Back side dots faintly visible (glass look)
         const sx = cx + proj.x;
         const sy = cy - proj.y;
         ctx.fillStyle = "rgba(148, 163, 184, 0.05)";
@@ -211,71 +227,13 @@ export function Globe3D({ markers = [], config = {}, onMarkerClick, onMarkerHove
       }
     });
 
-    if (markers.length >= 2) {
-      for (let i = 0; i < markers.length; i++) {
-        for (let j = i + 1; j < markers.length; j++) {
-          const a3d = markerTo3D(markers[i]);
-          const b3d = markerTo3D(markers[j]);
+  }, [rotationX, rotationY, atmosphereColor]);
 
-          const pa = projectPoint(a3d.x, a3d.y, a3d.z, R);
-          const pb = projectPoint(b3d.x, b3d.y, b3d.z, R);
-
-          if (pa.z > -0.2 && pb.z > -0.2) {
-            const sax = cx + pa.x;
-            const say = cy - pa.y;
-            const sbx = cx + pb.x;
-            const sby = cy - pb.y;
-
-            const midX = (sax + sbx) / 2;
-            const midY = (say + sby) / 2;
-            const dx = midX - cx;
-            const dy = midY - cy;
-            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-            const cpx = midX - (dx / dist) * R * 0.4;
-            const cpy = midY - (dy / dist) * R * 0.4;
-
-            const grad = ctx.createLinearGradient(sax, say, sbx, sby);
-            grad.addColorStop(0, "rgba(99, 102, 241, 0.6)");
-            grad.addColorStop(0.5, "rgba(167, 139, 250, 0.85)");
-            grad.addColorStop(1, "rgba(99, 102, 241, 0.6)");
-
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(sax, say);
-            ctx.quadraticCurveTo(cpx, cpy, sbx, sby);
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([5, 5]);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            ctx.restore();
-
-            const t = ((Date.now() * 0.0005) + i * 0.4 + j * 0.2) % 1;
-            const dotX = (1 - t) * (1 - t) * sax + 2 * (1 - t) * t * cpx + t * t * sbx;
-            const dotY = (1 - t) * (1 - t) * say + 2 * (1 - t) * t * cpy + t * t * sby;
-
-            const dotGlow = ctx.createRadialGradient(dotX, dotY, 0, dotX, dotY, 10);
-            dotGlow.addColorStop(0, "rgba(167, 139, 250, 0.6)");
-            dotGlow.addColorStop(1, "rgba(167, 139, 250, 0)");
-            ctx.beginPath();
-            ctx.arc(dotX, dotY, 10, 0, Math.PI * 2);
-            ctx.fillStyle = dotGlow;
-            ctx.fill();
-
-            ctx.beginPath();
-            ctx.arc(dotX, dotY, 3.5, 0, Math.PI * 2);
-            ctx.fillStyle = "#a78bfa";
-            ctx.fill();
-          }
-        }
-      }
-    }
-
-  }, [rotationX, rotationY, atmosphereColor, markers]);
-
+  // Project markers to render as HTML overlays
   const projectedMarkers = markers.map((marker, index) => {
     const latRad = (marker.lat * Math.PI) / 180;
     const lngRad = (marker.lng * Math.PI) / 180;
+    
     // 3D coordinates on unit sphere
     const mx = Math.cos(latRad) * Math.sin(lngRad);
     const my = Math.sin(latRad);

@@ -112,24 +112,13 @@ export function MeetTheCrew() {
         </button>
       </div>
 
-      {/* 2. Tablet Trigger (Floating Circular Button) */}
+      {/* 2. Tablet Trigger (Floating Circular Button) — hidden on phones */}
       <div className="hidden md:flex lg:hidden fixed bottom-24 right-6 z-[100]">
         <button
           onClick={togglePanel}
           className={`w-14 h-14 bg-white/90 backdrop-blur-md border border-purple-200 rounded-full shadow-lg flex items-center justify-center text-purple-700 hover:bg-purple-50 hover:scale-105 transition-all duration-300 ${isOpen ? 'opacity-0 pointer-events-none scale-90' : 'opacity-100 scale-100'}`}
         >
           <Users size={24} />
-        </button>
-      </div>
-
-      {/* 3. Mobile Trigger (Pill Button at Bottom) */}
-      <div className="flex md:hidden fixed bottom-8 left-1/2 -translate-x-1/2 z-[100]">
-        <button
-          onClick={togglePanel}
-          className={`flex items-center gap-2 px-6 py-3 bg-white/95 backdrop-blur-md border border-purple-200 rounded-full shadow-lg text-purple-800 font-medium hover:bg-purple-50 transition-all duration-300 ${isOpen ? 'opacity-0 pointer-events-none translate-y-10' : 'opacity-100 translate-y-0'}`}
-        >
-          <Users size={20} />
-          Meet The Crew
         </button>
       </div>
 

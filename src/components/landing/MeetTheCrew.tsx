@@ -92,11 +92,11 @@ export function MeetTheCrew() {
 
   return (
     <>
-      {/* 1. Desktop Triggers (Right Stacked Avatars) */}
-      <div className="hidden lg:flex fixed right-4 top-1/2 -translate-y-1/2 z-[100] flex-col items-center gap-2 group">
+      {/* Desktop Trigger — anchored to bottom-right of TestimonialsSection (taskbar style) */}
+      <div className="hidden lg:flex absolute bottom-8 right-4 z-[100] flex-col items-center gap-2">
         <button
           onClick={togglePanel}
-          className={`flex flex-col items-center gap-1.5 p-2 bg-white/80 backdrop-blur-md border border-purple-100 rounded-full shadow-lg hover:shadow-xl hover:border-purple-300 transition-all duration-300 ${isOpen ? 'opacity-0 pointer-events-none translate-x-10' : 'opacity-100 translate-x-0'}`}
+          className={`flex flex-col items-center gap-1.5 p-2.5 bg-white/85 backdrop-blur-md border border-purple-100 rounded-[20px] shadow-xl hover:shadow-2xl hover:border-purple-300 transition-all duration-300 ${isOpen ? 'opacity-0 pointer-events-none translate-x-10' : 'opacity-100 translate-x-0'}`}
         >
           <div className="flex flex-col -space-y-2 relative">
             {CREW_MEMBERS.slice(0, 3).map((member, i) => (
@@ -153,7 +153,7 @@ export function MeetTheCrew() {
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               className="fixed z-[101] bg-white/80 backdrop-blur-xl border border-white/40 shadow-2xl overflow-y-auto lg:overflow-visible
                 bottom-0 left-0 right-0 h-[85vh] rounded-t-3xl md:h-auto md:max-h-[80vh] md:w-[400px] md:bottom-24 md:right-6 md:left-auto md:rounded-3xl
-                lg:top-1/2 lg:-translate-y-1/2 lg:bottom-auto lg:right-4 lg:w-[400px] lg:h-auto lg:max-h-[calc(100vh-2rem)] lg:rounded-3xl"
+                lg:bottom-6 lg:right-20 lg:top-auto lg:translate-y-0 lg:w-[400px] lg:h-auto lg:max-h-[calc(100vh-3rem)] lg:rounded-3xl"
             >
               <div className="p-6 relative h-full flex flex-col">
                 {/* Mobile Handle */}

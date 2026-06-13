@@ -35,17 +35,21 @@ export function LandingPage() {
         <ProblemSection />
         <StorySection />
         <FeaturesSection />
+        {/* AISection (dark "One recovery plan") now before RolesSection (light "Built for every person") */}
+        <AISection />
         <RolesSection />
         <DrugInteractionSection />
-        <AISection />
         <BearySection />
         <AmbulanceSection />
-        <TestimonialsSection />
+        {/* TestimonialsSection with MeetTheCrew anchored to it via relative wrapper */}
+        <div className="relative">
+          <TestimonialsSection />
+          <MeetTheCrew />
+        </div>
         <CTASection />
       </main>
       <Footer />
       <ChatbotWidget />
-      <MeetTheCrew />
     </>
   );
 }

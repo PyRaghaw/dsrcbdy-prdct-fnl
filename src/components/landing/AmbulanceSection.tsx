@@ -262,6 +262,10 @@ export function AmbulanceSection() {
     const L = (window as any).L;
     if (!L) return;
 
+    if (typeof window !== 'undefined' && window.innerWidth < 1024 && mapContainerRef.current) {
+      mapContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
     if (intervalRef.current) clearInterval(intervalRef.current);
 
     // Pick next route from shuffled queue
@@ -457,14 +461,14 @@ export function AmbulanceSection() {
         </Reveal>
 
         {/* Section Columns */}
-        <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-10 lg:gap-16 items-center">
+        <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-6 lg:gap-16 items-center">
           
           {/* Left Side: Control Console */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4 md:gap-6">
             
             {/* Simulation Control Card */}
             <Reveal className="w-full" delay={0.08}>
-              <div className="rounded-[28px] border border-slate-200 bg-[#fafaf9] p-6 md:p-8 shadow-sm">
+              <div className="rounded-[28px] border border-slate-200 bg-[#fafaf9] p-5 md:p-8 shadow-sm">
                 <div className="flex items-center gap-2 mb-4">
                   <ShieldAlert className="w-5 h-5 text-brand" />
                   <span className="text-[12px] font-bold uppercase tracking-wider text-brand">Simulation Console</span>
@@ -473,12 +477,12 @@ export function AmbulanceSection() {
                 <h3 className="font-[family-name:var(--font-bricolage)] text-[22px] font-black text-slate-900 leading-tight">
                   Trigger Simulation
                 </h3>
-                <p className="mt-3 text-[14px] leading-relaxed text-slate-500">
+                <p className="mt-3 text-[14px] leading-relaxed text-slate-500 hidden md:block">
                   Press the button below to initiate an ambulance request, upload a real-time clinical report, and track the dispatched ambulance on Leaflet maps.
                 </p>
 
                 {/* Active Case Details (auto-updates with each EN ROUTE click) */}
-                <div className="mt-6 text-[11px] bg-indigo-50/50 border border-indigo-100/50 rounded-xl p-3 text-slate-600">
+                <div className="mt-4 text-[11px] bg-indigo-50/50 border border-indigo-100/50 rounded-xl p-3 text-slate-600 hidden md:block">
                   <div className="font-extrabold text-indigo-950 uppercase tracking-wide text-[9px] mb-1">Active Case Details</div>
                   <div className="flex flex-col gap-0.5">
                     <div><span className="font-semibold text-indigo-900">Patient:</span> {activeRoute.patientName}</div>
@@ -488,7 +492,7 @@ export function AmbulanceSection() {
                 </div>
 
                 {/* Emergency SOS Panic Trigger */}
-                <div className="mt-6 flex flex-col items-center justify-center p-6 border-2 border-dashed border-red-200/60 rounded-2xl bg-red-50/20 relative overflow-hidden">
+                <div className="mt-4 flex flex-col items-center justify-center p-4 md:p-6 border-2 border-dashed border-red-200/60 rounded-2xl bg-red-50/20 relative overflow-hidden">
                   <div className="text-center mb-4">
                     <span className="text-[10px] font-black uppercase tracking-widest text-red-600 block mb-1">Tactile Panic Console</span>
                     <p className="text-[12px] text-slate-500">Press and hold the SOS button to alert dispatch</p>
@@ -574,7 +578,7 @@ export function AmbulanceSection() {
                 </div>
 
                 {/* Simulation controls */}
-                <div className="mt-8 flex flex-wrap items-center gap-3.5">
+                <div className="mt-4 md:mt-8 flex flex-wrap items-center gap-3">
                   <button
                     type="button"
                     onClick={startSimulation}
@@ -604,7 +608,7 @@ export function AmbulanceSection() {
 
             {/* Live stats card */}
             <Reveal className="w-full" delay={0.16}>
-              <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[var(--shadow-card)]">
+              <div className="rounded-[28px] border border-slate-200 bg-white p-4.5 md:p-6 shadow-[var(--shadow-card)]">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-4">Live Dispatch Logs</span>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -643,7 +647,7 @@ export function AmbulanceSection() {
           </div>
 
           {/* Right Side: Mockup Phone */}
-          <Reveal className="flex justify-center" delay={0.24}>
+          <Reveal className="flex justify-center order-first lg:order-none" delay={0.24}>
             <PhoneFrame size="main" premium>
               {/* App Screen Mockup */}
               <div className="relative min-h-[500px] flex flex-col justify-between bg-[#fafaf9] pt-10 text-slate-900 h-full w-full">

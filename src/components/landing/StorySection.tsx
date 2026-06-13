@@ -107,7 +107,7 @@ export function StorySection() {
             />
           </div>
 
-          <div className="relative h-auto md:min-h-[360px]">
+          <div className="relative hidden md:block md:min-h-[360px]">
             {[
               {
                 className: 'story-scene-1',
@@ -202,10 +202,133 @@ export function StorySection() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-10 px-5 pb-20 md:hidden">
-          {(['import', 'scan', 'meds', 'timeline', 'chat', 'sos'] as const).map((screen) => (
-            <MeddyAppPhone key={screen} activeScreen={screen} autoPlay={false} showMascotCard={false} />
-          ))}
+        {/* Mobile Interleaved Flow */}
+        <div className="flex flex-col gap-16 px-5 pb-20 md:hidden mt-4">
+          {/* Item 1 */}
+          <div className="space-y-6">
+            <div>
+              <span className="mb-2 block text-[11px] font-black uppercase tracking-[0.24em] text-brand">
+                01 / Discharge
+              </span>
+              <h3 className="font-[family-name:var(--font-bricolage)] text-[28px] font-black leading-tight text-slate-950">
+                You're finally going home.
+              </h3>
+              <p className="mt-3 text-[14px] font-light leading-relaxed text-slate-600">
+                But instead of peace, you're handed a folder full of confusing prescription details, follow-up dates, and generic rules.
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <DischargePaper className="scale-95 origin-center shadow-lg" />
+            </div>
+          </div>
+
+          {/* Item 2 */}
+          <div className="space-y-6">
+            <div>
+              <span className="mb-2 block text-[11px] font-black uppercase tracking-[0.24em] text-brand">
+                02 / Paper chaos
+              </span>
+              <h3 className="font-[family-name:var(--font-bricolage)] text-[28px] font-black leading-tight text-slate-950">
+                Everything important is buried.
+              </h3>
+              <p className="mt-3 text-[14px] font-light leading-relaxed text-slate-600">
+                Medicines, timings, diet instructions, and red flags are scattered across documents when you are least ready to decode them.
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <DischargePaper compact className="scale-95 origin-center shadow-lg" />
+            </div>
+          </div>
+
+          {/* Item 3 */}
+          <div className="space-y-6">
+            <div>
+              <span className="mb-2 block text-[11px] font-black uppercase tracking-[0.24em] text-brand">
+                03 / 3 AM panic
+              </span>
+              <h3 className="font-[family-name:var(--font-bricolage)] text-[28px] font-black leading-tight text-slate-950">
+                "Is this pain normal?"
+              </h3>
+              <p className="mt-3 text-[14px] font-light leading-relaxed text-slate-600">
+                Google gives worst-case answers. What patients need is guidance based on their own discharge summary, not random search results.
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <GooglePanicPhone className="scale-95 origin-center shadow-lg" />
+            </div>
+          </div>
+
+          {/* Item 4 */}
+          <div className="space-y-6">
+            <div>
+              <span className="mb-2 block text-[11px] font-black uppercase tracking-[0.24em] text-brand">
+                04 / Scan
+              </span>
+              <h3 className="font-[family-name:var(--font-bricolage)] text-[28px] font-black leading-tight text-slate-950">
+                Snap the paper. AI reads the plan.
+              </h3>
+              <p className="mt-3 text-[14px] font-light leading-relaxed text-slate-600">
+                The app imports the discharge summary, scans the clinical text, and turns messy instructions into structured recovery data.
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <MeddyAppPhone activeScreen="scan" autoPlay={false} showMascotCard={false} className="w-full scale-95 origin-center" />
+            </div>
+          </div>
+
+          {/* Item 5 */}
+          <div className="space-y-6">
+            <div>
+              <span className="mb-2 block text-[11px] font-black uppercase tracking-[0.24em] text-brand">
+                05 / Organize
+              </span>
+              <h3 className="font-[family-name:var(--font-bricolage)] text-[28px] font-black leading-tight text-slate-950">
+                Medicines become a daily schedule.
+              </h3>
+              <p className="mt-3 text-[14px] font-light leading-relaxed text-slate-600">
+                Doses, timing, progress, and reminders are converted into a clean mobile hub that patients can actually follow.
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <MeddyAppPhone activeScreen="meds" autoPlay={false} showMascotCard={false} className="w-full scale-95 origin-center" />
+            </div>
+          </div>
+
+          {/* Item 6 */}
+          <div className="space-y-6">
+            <div>
+              <span className="mb-2 block text-[11px] font-black uppercase tracking-[0.24em] text-brand">
+                06 / Recover
+              </span>
+              <h3 className="font-[family-name:var(--font-bricolage)] text-[28px] font-black leading-tight text-slate-950">
+                Roadmap plus Mr. Meddy support.
+              </h3>
+              <p className="mt-3 text-[14px] font-light leading-relaxed text-slate-600">
+                Patients see the day-by-day recovery path and can ask Mr. Meddy questions when anxiety hits.
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <MeddyAppPhone activeScreen="chat" autoPlay={false} showMascotCard={false} className="w-full scale-95 origin-center" />
+            </div>
+          </div>
+
+          {/* Item 7 */}
+          <div className="space-y-6">
+            <div>
+              <span className="mb-2 block text-[11px] font-black uppercase tracking-[0.24em] text-brand">
+                07 / Emergency
+              </span>
+              <h3 className="font-[family-name:var(--font-bricolage)] text-[28px] font-black leading-tight text-slate-950">
+                SOS & Emergency Assistance
+              </h3>
+              <p className="mt-3 text-[14px] font-light leading-relaxed text-slate-600">
+                Instant access to emergency support when urgent help is needed. Users can trigger an SOS alert, notify family members and caregivers, share their live location, and access critical medical information during emergencies.
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <MeddyAppPhone activeScreen="sos" autoPlay={false} showMascotCard={false} className="w-full scale-95 origin-center" />
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -215,7 +338,7 @@ export function StorySection() {
 function DischargePaper({ className, compact = false }: { className?: string; compact?: boolean }) {
   return (
     <div
-      className={`${className ?? ''} h-[500px] w-[350px] rounded-sm border border-slate-200 bg-white p-8 shadow-2xl`}
+      className={`${className ?? ''} h-[500px] w-full max-w-[350px] md:w-[350px] rounded-sm border border-slate-200 bg-white p-8 shadow-2xl`}
     >
       <div className="mb-6 flex items-center gap-3 border-b border-slate-100 pb-4">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand/10">
@@ -274,7 +397,7 @@ function DischargePaper({ className, compact = false }: { className?: string; co
 function GooglePanicPhone({ className }: { className?: string }) {
   return (
     <div
-      className={`${className ?? ''} flex h-[600px] w-[300px] flex-col overflow-hidden rounded-[3rem] border-[12px] border-slate-900 bg-white px-4 pb-6 pt-12 shadow-2xl`}
+      className={`${className ?? ''} flex h-[600px] w-full max-w-[300px] md:w-[300px] flex-col overflow-hidden rounded-[3rem] border-[12px] border-slate-900 bg-white px-4 pb-6 pt-12 shadow-2xl`}
     >
       <div className="absolute left-1/2 top-2 z-20 h-6 w-24 -translate-x-1/2 rounded-full bg-slate-900" />
       <div className="mb-6 flex w-full items-center gap-2 rounded-full bg-slate-100 px-4 py-3">

@@ -3,165 +3,77 @@
 import { useRef, useEffect, useCallback } from 'react';
 import gsap from 'gsap';
 
-export interface BlobCursorProps {
-  blobType?: 'circle' | 'square';
-  fillColor?: string;
-  trailCount?: number;
-  sizes?: number[];
-  innerSizes?: number[];
-  innerColor?: string;
-  opacities?: number[];
-  shadowColor?: string;
-  shadowBlur?: number;
-  shadowOffsetX?: number;
-  shadowOffsetY?: number;
-  filterId?: string;
-  filterStdDeviation?: number;
-  filterColorMatrixValues?: string;
-  useFilter?: boolean;
-  fastDuration?: number;
-  slowDuration?: number;
-  fastEase?: string;
-  slowEase?: string;
-  zIndex?: number;
-}
-
-export default function BlobCursor({
-  blobType = 'circle',
-  fillColor = 'rgba(92, 96, 245, 0.45)', // VANI premium brand violet with transparency
-  trailCount = 3,
-  sizes = [80, 140, 95],
-  innerSizes = [25, 40, 30],
-  innerColor = 'rgba(255, 255, 255, 0.75)',
-  opacities = [0.8, 0.6, 0.7],
-  shadowColor = 'rgba(92, 96, 245, 0.25)',
-  shadowBlur = 8,
-  shadowOffsetX = 0,
-  shadowOffsetY = 0,
-  filterId = 'blob',
-  filterStdDeviation = 25,
-  filterColorMatrixValues = '1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 35 -10',
-  useFilter = true,
-  fastDuration = 0.1,
-  slowDuration = 0.5,
-  fastEase = 'power3.out',
-  slowEase = 'power1.out',
-  zIndex = 999999
-}) {
+/**
+ * Concentric glowing circles cursor — desktop only (hidden md:block)
+ * Matches the blue concentric rings design shown in the reference image.
+ * No SVG filter used — fully cross-browser (Safari + Chrome).
+ */
+export default function BlobCursor() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const blobsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const ringsRef = useRef<(HTMLDivElement | null)[]>([]);
 
-  const updateOffset = useCallback(() => {
-    if (!containerRef.current) return { left: 0, top: 0 };
-    const rect = containerRef.current.getBoundingClientRect();
-    return { left: rect.left, top: rect.top };
-  }, []);
+  // Ring configs: size, color, lag duration (outermost ring lags most)
+  const rings = [
+    { size: 16,  color: 'rgba(255,255,255,0.95)', duration: 0.06 },
+    { size: 44,  color: 'rgba(120,130,255,0.70)', duration: 0.18 },
+    { size: 90,  color: 'rgba(80, 95,240,0.40)',  duration: 0.35 },
+    { size: 150, color: 'rgba(60, 80,230,0.22)',  duration: 0.55 },
+    { size: 220, color: 'rgba(50, 70,210,0.12)',  duration: 0.80 },
+  ];
 
-  const handleMove = useCallback(
-    (e: MouseEvent | TouchEvent) => {
-      const { left, top } = updateOffset();
-      
-      let x = 0;
-      let y = 0;
-      
-      if ('clientX' in e) {
-        x = e.clientX;
-        y = e.clientY;
-      } else if (e.touches && e.touches.length > 0) {
-        x = e.touches[0].clientX;
-        y = e.touches[0].clientY;
-      } else {
-        return;
-      }
+  const handleMove = useCallback((e: MouseEvent) => {
+    const x = e.clientX;
+    const y = e.clientY;
 
-      blobsRef.current.forEach((el, i) => {
-        if (!el) return;
-        const isLead = i === 0;
-        gsap.to(el, {
-          x: x - left,
-          y: y - top,
-          duration: isLead ? fastDuration : slowDuration,
-          ease: isLead ? fastEase : slowEase,
-          overwrite: 'auto'
-        });
+    ringsRef.current.forEach((el, i) => {
+      if (!el) return;
+      gsap.to(el, {
+        x: x,
+        y: y,
+        duration: rings[i].duration,
+        ease: 'power2.out',
+        overwrite: 'auto',
       });
-    },
-    [updateOffset, fastDuration, slowDuration, fastEase, slowEase]
-  );
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    const onResize = () => updateOffset();
-    
-    window.addEventListener('resize', onResize);
     window.addEventListener('mousemove', handleMove);
-    window.addEventListener('touchmove', handleMove, { passive: true });
-    
-    // Initial position in the center of the window
-    if (typeof window !== 'undefined') {
-      const startX = window.innerWidth / 2;
-      const startY = window.innerHeight / 2;
-      blobsRef.current.forEach((el) => {
-        if (!el) return;
-        gsap.set(el, { x: startX, y: startY });
-      });
-    }
-
-    return () => {
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('mousemove', handleMove);
-      window.removeEventListener('touchmove', handleMove);
-    };
-  }, [updateOffset, handleMove]);
+    return () => window.removeEventListener('mousemove', handleMove);
+  }, [handleMove]);
 
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 pointer-events-none w-full h-full overflow-hidden hidden md:block"
-      style={{ zIndex, isolation: 'isolate' }}
+      className="fixed inset-0 pointer-events-none overflow-hidden hidden md:block"
+      style={{ zIndex: 999999 }}
+      aria-hidden="true"
     >
-      {useFilter && (
-        <svg className="absolute w-0 h-0">
-          <filter id={filterId}>
-            <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation={filterStdDeviation} />
-            <feColorMatrix in="blur" values={filterColorMatrixValues} />
-          </filter>
-        </svg>
-      )}
-
-      <div
-        className="pointer-events-none absolute inset-0 select-none cursor-default"
-        style={{ filter: useFilter ? `url(#${filterId})` : undefined }}
-      >
-        {Array.from({ length: trailCount }).map((_, i) => (
-          <div
-            key={i}
-            ref={el => {
-              blobsRef.current[i] = el;
-            }}
-            className="absolute will-change-transform transform -translate-x-1/2 -translate-y-1/2"
-            style={{
-              width: sizes[i] || 60,
-              height: sizes[i] || 60,
-              borderRadius: blobType === 'circle' ? '50%' : '0',
-              backgroundColor: fillColor,
-              opacity: opacities[i] !== undefined ? opacities[i] : 0.6,
-              boxShadow: `${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px 0 ${shadowColor}`
-            }}
-          >
-            <div
-              className="absolute"
-              style={{
-                width: innerSizes[i] || 20,
-                height: innerSizes[i] || 20,
-                top: ((sizes[i] || 60) - (innerSizes[i] || 20)) / 2,
-                left: ((sizes[i] || 60) - (innerSizes[i] || 20)) / 2,
-                backgroundColor: innerColor,
-                borderRadius: blobType === 'circle' ? '50%' : '0'
-              }}
-            />
-          </div>
-        ))}
-      </div>
+      {rings.map((ring, i) => (
+        <div
+          key={i}
+          ref={el => { ringsRef.current[i] = el; }}
+          className="absolute rounded-full will-change-transform"
+          style={{
+            width: ring.size,
+            height: ring.size,
+            backgroundColor: ring.color,
+            // Center the ring on cursor position (rings are positioned top-left by GSAP x/y)
+            marginLeft: -ring.size / 2,
+            marginTop: -ring.size / 2,
+            // Glow effect for each ring
+            boxShadow: i === 0
+              ? `0 0 12px 4px rgba(140,150,255,0.9)`
+              : i === 1
+              ? `0 0 24px 8px rgba(100,110,255,0.5)`
+              : `0 0 ${16 + i * 12}px ${4 + i * 4}px rgba(70,90,240,${0.2 - i * 0.03})`,
+            // Outermost rings slightly blurred for soft glow
+            filter: i >= 3 ? `blur(${(i - 2) * 2}px)` : 'none',
+            top: 0,
+            left: 0,
+          }}
+        />
+      ))}
     </div>
   );
 }

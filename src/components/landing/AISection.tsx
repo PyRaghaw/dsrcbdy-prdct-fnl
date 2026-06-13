@@ -5,11 +5,22 @@ import { Reveal } from './ui/Reveal';
 import { SectionHeader } from './ui/SectionHeader';
 
 const careNodes = [
-  { role: 'Daughter', initials: 'DU', x: 22, y: 28, color: '#ec4899', note: 'gets missed-dose alerts' },
+  { role: 'Daughter',  initials: 'DU', x: 22, y: 28, color: '#ec4899', note: 'gets missed-dose alerts' },
   { role: 'Caregiver', initials: 'CG', x: 77, y: 24, color: '#22c55e', note: 'tracks daily adherence' },
-  { role: 'Doctor', initials: 'DR', x: 83, y: 68, color: '#38bdf8', note: 'reviews risk flags' },
-  { role: 'Mom', initials: 'MO', x: 28, y: 76, color: '#f59e0b', note: 'sees plain instructions' },
-  { role: 'Dad', initials: 'DA', x: 50, y: 14, color: '#a78bfa', note: 'shares recovery timeline' },
+  { role: 'Doctor',    initials: 'DR', x: 83, y: 68, color: '#38bdf8', note: 'reviews risk flags' },
+  { role: 'Mom',       initials: 'MO', x: 28, y: 76, color: '#f59e0b', note: 'sees plain instructions' },
+  { role: 'Dad',       initials: 'DA', x: 50, y: 14, color: '#a78bfa', note: 'shares recovery timeline' },
+];
+
+// Badge dot colours — order matches AI_MODELS array
+const MODEL_COLORS = [
+  '#ec4899', // NVIDIA Nemotron
+  '#22c55e', // Groq Llama
+  '#38bdf8', // Google Gemini
+  '#4285f4', // Google TTS
+  '#ff6d00', // Firebase
+  '#1a73e8', // GCP
+  '#f59e0b', // docTR · TrOCR
 ];
 
 export function AISection() {
@@ -46,14 +57,14 @@ export function AISection() {
           />
 
           <div className="mt-9 flex flex-wrap gap-2">
-            {AI_MODELS.slice(0, 5).map((tag, i) => (
+            {AI_MODELS.map((tag, i) => (
               <span
                 key={tag}
                 className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.055] px-3.5 py-1.5 font-mono text-[12px] font-semibold text-emerald-200 transition-all duration-200 hover:border-brand/40 hover:bg-brand/15 hover:text-white"
               >
                 <span
                   className="h-1.5 w-1.5 rounded-full animate-pulse-dot"
-                  style={{ backgroundColor: careNodes[i]?.color ?? '#5c60f5' }}
+                  style={{ backgroundColor: MODEL_COLORS[i] ?? '#5c60f5' }}
                 />
                 {tag}
               </span>

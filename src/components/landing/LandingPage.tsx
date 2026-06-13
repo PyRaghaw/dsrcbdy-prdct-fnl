@@ -34,8 +34,8 @@ export function LandingPage() {
         <ProofStrip />
         <ProblemSection />
         <StorySection />
-        <RolesSection />
         <FeaturesSection />
+        <RolesSection />
         <DrugInteractionSection />
         <AISection />
         <BearySection />

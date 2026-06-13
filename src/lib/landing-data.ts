@@ -184,9 +184,10 @@ export const FEATURES = [
 export const AI_MODELS = [
   "NVIDIA Nemotron",
   "Groq Llama 3.3 70B",
-  "Claude 3.5 Sonnet",
   "Google Gemini",
-  "ElevenLabs TTS",
+  "Google TTS",
+  "Firebase",
+  "GCP",
   "docTR · TrOCR",
 ] as const;
 
@@ -199,17 +200,17 @@ export const AI_CARDS = [
   {
     icon: "💬",
     title: "Plain Language Translation",
-    desc: "Claude 3.5 Sonnet converts dense discharge documents into language any patient or family member can immediately act on.",
+    desc: "Google Gemini converts dense discharge documents into language any patient or family member can immediately act on.",
   },
   {
     icon: "🎙️",
     title: "AI Audio Shift Briefings",
-    desc: "ElevenLabs generates spoken patient summaries for nurses, providing a complete voice briefing ready at the start of every shift.",
+    desc: "Google TTS generates spoken patient summaries for nurses, providing a complete voice briefing ready at the start of every shift.",
   },
   {
     icon: "📊",
     title: "Real-Time Risk Scoring",
-    desc: "Risk scores computed live from adherence patterns, symptom logs, and recovery trajectory. Flagged before it becomes a crisis.",
+    desc: "Risk scores computed live on Firebase and GCP from adherence patterns, symptom logs, and recovery trajectory. Flagged before it becomes a crisis.",
   },
 ] as const;
 

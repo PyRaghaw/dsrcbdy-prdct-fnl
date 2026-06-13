@@ -15,13 +15,11 @@ import { RolesSection }         from './RolesSection';
 import { StorySection }         from './StorySection';
 import { TestimonialsSection }  from './TestimonialsSection';
 import { DrugInteractionSection } from './DrugInteractionSection';
-import BlobCursor               from '@/components/ui/BlobCursor';
 import { ChatbotWidget }        from '@/components/ui/ChatbotWidget';
 
 export function LandingPage() {
   return (
     <>
-      <BlobCursor />
       <AnnouncementBar />
       <Navbar hasBar />
       <main>
